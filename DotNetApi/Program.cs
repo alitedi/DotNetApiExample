@@ -1,3 +1,5 @@
+using Serilog;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -21,6 +23,15 @@ builder.Services.AddCors(options =>
                         .AllowAnyMethod());
 });
 
+// Serolig Configuration 
+builder.Host.UseSerilog((context, loggerConfiguration) => {
+    // context : instance of builder 
+
+    // 1. Can write on console 
+    // 2. access to configuration file (appsettings.json) 
+    loggerConfiguration.WriteTo.Console().ReadFrom.Configuration(context.Configuration);
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -29,6 +40,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Start logging the type of requests coming in like HTTP Get / reponse etc... 
+app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
 
