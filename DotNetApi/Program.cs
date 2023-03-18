@@ -1,3 +1,5 @@
+using DotNetApi.Models;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,9 +13,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
-// CORS : Cross Origin Resource Sharing 
-// Access to API throw out of server 
-// From applications that are deployed to machines that are not on the same resource as our API. 
+/* 
+ * CORS : Cross Origin Resource Sharing 
+ * Access to API throw out of server 
+ * From applications that are deployed to machines that are not on the same resource as our API. 
+ */
 builder.Services.AddCors(options =>
 {
     // Allow all to access to all the resources 
@@ -21,6 +25,14 @@ builder.Services.AddCors(options =>
         policy => policy.AllowAnyHeader()
                         .AllowAnyOrigin()
                         .AllowAnyMethod());
+});
+
+/*
+ * Connection to local DB 
+ */
+var connectionString = builder.Configuration.GetConnectionString("DBConnectionString");
+builder.Services.AddDbContext<PoetryDBContext>(options => {
+    options.UseSqlServer(connectionString);
 });
 
 // Serolig Configuration 
